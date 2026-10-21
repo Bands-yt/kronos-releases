@@ -1,5 +1,9 @@
 # Kronos downloads
 
-Official builds of Kronos (Player and Studio). Download the latest from the [Releases page](https://github.com/Bands-yt/kronos-releases/releases/latest).
+Official builds of Kronos (Player and Studio).
 
-Bug reports and ideas: use this repo's Issues tab. The source code is private.
+- **Download:** the [latest release](https://github.com/Bands-yt/kronos-releases/releases/latest)
+- **Website:** https://kronos-site.kronosengine.workers.dev
+- **Bug reports and ideas:** this repo's [Issues](https://github.com/Bands-yt/kronos-releases/issues)
+
+The source code is private.
