@@ -47,6 +47,7 @@ jobs:
           ./build/tests/engine_tests > "$RUNNER_TEMP/test.log" 2>&1
           code=$?
           grep -E '^FAIL|checks passed' "$RUNNER_TEMP/test.log" | cut -c1-200 | head -40
+          [ $code -ne 0 ] && { echo "exit code $code; last lines:"; tail -15 "$RUNNER_TEMP/test.log" | cut -c1-160; }
           exit $code
       - name: Roblox compatibility
         working-directory: engine
@@ -96,4 +97,5 @@ jobs:
           .\build\tests\Release\engine_tests.exe *> $log
           $code = $LASTEXITCODE
           Select-String -Path $log -Pattern '^FAIL|checks passed' | ForEach-Object { $_.Line } | Select-Object -First 40
+          if ($code -ne 0) { "exit code $code; last lines:"; Get-Content $log -Tail 15 | ForEach-Object { $_.Substring(0, [Math]::Min(160, $_.Length)) } }
           exit $code
