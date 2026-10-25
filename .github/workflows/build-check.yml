@@ -94,8 +94,9 @@ jobs:
           KRONOS_SCRIPT_BUDGET_MS: "200"
         run: |
           $log = Join-Path $env:RUNNER_TEMP "test.log"
-          .\build\tests\Release\engine_tests.exe *> $log
-          $code = $LASTEXITCODE
+          $p = Start-Process -FilePath .\build\tests\Release\engine_tests.exe -RedirectStandardOutput $log -RedirectStandardError "$log.err" -NoNewWindow -PassThru
+          if (-not $p.WaitForExit(900000)) { "TIMEOUT after 15 minutes, stopping the tests"; $p.Kill(); $code = 99 } else { $code = $p.ExitCode }
+          if (Test-Path "$log.err") { Get-Content "$log.err" | Select-Object -Last 10 | ForEach-Object { "stderr: " + $_ } }
           Select-String -Path $log -Pattern '^FAIL|checks passed' | ForEach-Object { $_.Line } | Select-Object -First 40
           if ($code -ne 0) { "exit code $code; last lines:"; Get-Content $log | Where-Object { $_ -notmatch '^\s+[A-Z]:\\' } | Select-Object -Last 25 | ForEach-Object { $_.Substring(0, [Math]::Min(160, $_.Length)) } }
           exit $code
