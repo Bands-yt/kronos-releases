@@ -97,7 +97,7 @@ jobs:
           $p = Start-Process -FilePath .\build\tests\Release\engine_tests.exe -RedirectStandardOutput $log -RedirectStandardError "$log.err" -NoNewWindow -PassThru
           if (-not $p.WaitForExit(900000)) { "TIMEOUT after 15 minutes, stopping the tests"; $p.Kill(); $code = 99 } else { $code = $p.ExitCode }
           if (Test-Path "$log.err") { Get-Content "$log.err" | Select-Object -Last 10 | ForEach-Object { "stderr: " + $_ } }
-          if (Test-Path "$log.err") { Select-String -Path "$log.err" -Pattern "^FAIL" | ForEach-Object { "failed: " + $_.Line } | Select-Object -First 40 }
+          if (Test-Path "$log.err") { Select-String -Path "$log.err" -Pattern "^FAIL" -Context 14,0 | Select-Object -First 3 | ForEach-Object { $_.Context.PreContext + $_.Line } | ForEach-Object { "ctx: " + $_ } }
           Select-String -Path $log -Pattern '^FAIL|checks passed' | ForEach-Object { $_.Line } | Select-Object -First 40
           if ($code -ne 0) { "exit code $code; last lines:"; Get-Content $log | Where-Object { $_ -notmatch '^\s+[A-Z]:\\' } | Select-Object -Last 25 | ForEach-Object { $_.Substring(0, [Math]::Min(160, $_.Length)) } }
           exit $code
